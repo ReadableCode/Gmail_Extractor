@@ -4,3 +4,7 @@ datetime
 pandas
 ipykernel
 tabulate
+google-auth
+google-auth-oauthlib
+google-api-python-client
+python-dotenv

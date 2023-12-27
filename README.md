@@ -29,7 +29,7 @@
   To run:
 
   ```bash
-  pipenv run python src/main.py
+  pipenv run python src/gmail_search_extractor.py
   ```
 
 * To make changes to requirements.txt, change the file and then:
