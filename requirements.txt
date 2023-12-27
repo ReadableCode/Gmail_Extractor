@@ -1,0 +1,6 @@
+numpy
+requests
+datetime
+pandas
+ipykernel
+tabulate
