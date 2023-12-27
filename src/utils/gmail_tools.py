@@ -99,8 +99,6 @@ Only downloads first file in the attachments of each email
 # Authentication #
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
-SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
 
@@ -109,9 +107,7 @@ def get_gmail_service(auth_dir):
     oauth_path = os.path.join(auth_dir, "oauth.json")
 
     creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
+    # The file token.json stores the user's access and refresh tokens, and is created automatically when the authorization flow completes for the first time.
     if os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(
             token_path,
