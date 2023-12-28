@@ -484,8 +484,18 @@ def get_body_dataframe_from_search_string(
 ):
     # search gmail for message
     service = get_gmail_service(auth_dir=auth_dir)
-    results = service.users().messages().list(userId="me", q=search_string).execute()
-    all_messages_from_search = results.get("messages", [])
+    all_messages_from_search = []
+    request = service.users().messages().list(userId="me", q=search_string)
+
+    while request:
+        response = request.execute()
+        all_messages_from_search.extend(response.get("messages", []))
+        request = (
+            service.users()
+            .messages()
+            .list_next(previous_request=request, previous_response=response)
+        )
+
     print(f"found {len(all_messages_from_search)} messages")
 
     if not all_messages_from_search:
