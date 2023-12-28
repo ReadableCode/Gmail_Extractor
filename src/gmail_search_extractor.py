@@ -39,6 +39,7 @@ if __name__ == "__main__":
     authentication_directory = os.path.join(
         expanduser("~"), "credentials", "personal", "gmail_auth"
     )
+    outfile = os.path.join(report_dir, "email_bodies.csv")
 
     if "ipykernel" in sys.argv[0]:
         print("Running in IPython kernel")
@@ -68,7 +69,6 @@ if __name__ == "__main__":
         if args.outfile:
             outfile = args.outfile
         else:
-            outfile = os.path.join(report_dir, "email_bodies.csv")
             print(f"No outfile specified. Using default: {outfile}")
 
         if args.authentication_directory:
