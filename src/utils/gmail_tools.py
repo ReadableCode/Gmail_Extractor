@@ -2,11 +2,8 @@
 # Running Imports #
 
 from __future__ import print_function
-from email.message import EmailMessage
-import os, glob
+import os
 import os.path
-from os.path import expanduser
-from time import sleep
 import sys
 import re
 
@@ -14,7 +11,6 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 import base64
 import pandas as pd
 import datetime
@@ -32,68 +28,9 @@ if __name__ == "__main__":
 
 from utils.config_utils import (
     file_dir,
-    parent_dir,
-    grandparent_dir,
     great_grandparent_dir,
     data_dir,
 )
-
-from utils.display_tools import print_logger, pprint_dict, pprint_ls, pprint_df
-
-
-# %%
-# Gmail Setup #
-
-"""
-######## Features ########
-
-Without force download, each email will be downloaded only once, its message id is logged in a file after the first successful download
-
-######## Usage ########
-
---- creating credentials ---
-Open the Google Cloud Console @ https://console.cloud.google.com/
-At the top-left, click Menu menu > APIs & Services > Credentials.
-Click Create Credentials > oauth client ID.
-Click Application type > Desktop app.
-In the "Name" field, type a name for the credential. This name is only shown in the Cloud Console.
-Click Create. The oauth client created screen appears, showing your new Client ID and Client secret.
-Click OK. The newly created credential appears under "oauth 2.0 Client IDs."
-Save in an auth_dir specefic to the account you are using
-on the app screen go to oauth consent screen, next until you hit scopes, and add gmail.compose and or gmail.readonly depending on scope of project
-
---- downloading existing credentials ---
-Open the Google Cloud Console @ https://console.cloud.google.com/
-At the top-left, click Menu menu > APIs & Services > Credentials.
-Click oauth client ID > Select the client ID you created.
-Click Download JSON.
-Save in an auth_dir specefic to the account you are using
-on the app screen go to oauth consent screen, next until you hit scopes, and add gmail.compose and or gmail.readonly depending on scope of project
-
---- to import ---
-from utils.gmail_tools import get_attachment_from_search_string
-
----search_string---
-set gmail search string, can use todays date but must be a string or f string
-
----output_path---
-use os.path.join on your path to make sure it is correct
-
----output_file_name---
-set output_file_name to None if you want to use the original file name
-set output_file_name to 'original with date' if you want to use the original file name with date
-
----force_download---
-set force_download to True if you want to download the file even if it has already been downloaded
-
----retries---
-Set retry variable if inconsistant results, default is 3, will not duplicate files or keep trying if it succeeds
-
-######## Limitations ########
-
-Only downloads first file in the attachments of each email
-
-"""
 
 
 # %%
@@ -108,7 +45,8 @@ def get_gmail_service(auth_dir):
     oauth_path = os.path.join(auth_dir, "oauth.json")
 
     creds = None
-    # The file token.json stores the user's access and refresh tokens, and is created automatically when the authorization flow completes for the first time.
+    # The file token.json stores the user's access and refresh tokens, and is created
+    # automatically when the authorization flow completes for the first time.
     if os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(
             token_path,
@@ -249,7 +187,10 @@ def get_attachment_from_search_string(
             continue
         elif message_was_already_done and force_download:
             print(
-                "Message already downloaded and force_download is True, downloading again"
+                (
+                    "Message already downloaded and force_download is True, "
+                    "downloading again"
+                )
             )
 
         executed_message = (
@@ -278,7 +219,7 @@ def get_attachment_from_search_string(
             if part["filename"]:
                 print("detected attachment type 1")
                 original_file_extension = part["filename"].split(".")[-1]
-                if output_file_name == None:
+                if output_file_name is None:
                     print("output_file_name is None, using original file name")
                     filename = part["filename"]
                     filename = (
@@ -289,7 +230,10 @@ def get_attachment_from_search_string(
                     )
                 elif output_file_name == "original with date":
                     print(
-                        "output_file_name is original with date, using original file name with date"
+                        (
+                            "output_file_name is original with date, "
+                            "using original file name with date"
+                        )
                     )
                     filename = (
                         part["filename"]
@@ -306,7 +250,10 @@ def get_attachment_from_search_string(
                     )
                 elif output_file_name == "original with date and seconds":
                     print(
-                        "output_file_name is original with date and seconds, using original file name with date and seconds"
+                        (
+                            "output_file_name is original with date and seconds, "
+                            "using original file name with date and seconds"
+                        )
                     )
                     filename = (
                         part["filename"]
@@ -401,7 +348,7 @@ def get_attachment_from_search_string(
                             attachment["data"].encode("utf-8")
                         )
                         break
-                except:
+                except Exception:
                     print("did not detect attachment type 2")
 
         path_with_file_name = os.path.join(output_path, filename)
@@ -575,9 +522,8 @@ auth_dir = os.path.join(great_grandparent_dir, "credentials", "personal", "gmail
 
 
 if __name__ == "__main__":
-    ############################## Download Roster Files #############################
     today_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    gmail_search_string = f"Job change reversion for Lyons"
+    gmail_search_string = "Job change reversion for Lyons"
     print(f" ########### Searching for: {gmail_search_string} ###########")
 
     email_addresses = get_email_addresses_from_search_string(
@@ -590,7 +536,6 @@ if __name__ == "__main__":
 # If Main Then Do Some Testing #
 
 if __name__ == "__main__":
-    ############################## Download Roster Files #############################
     today_date = datetime.datetime.now().strftime("%Y-%m-%d")
     gmail_search_string = f"Fwd: US PSP Fees March 2023 after:{today_date}"
     print(f" ########### Searching for: {gmail_search_string} ###########")
