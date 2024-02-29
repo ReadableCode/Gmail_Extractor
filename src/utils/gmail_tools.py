@@ -2,36 +2,32 @@
 # Running Imports #
 
 from __future__ import print_function
+
+import base64
+import datetime
+import mimetypes
 import os
 import os.path
-import sys
 import re
+import sys
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import formataddr
 
+import pandas as pd
+from dateutil.parser import parse
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-import base64
-import pandas as pd
-import datetime
-import mimetypes
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
-from email.utils import formataddr
-from dateutil.parser import parse
 
 # append grandparent
 if __name__ == "__main__":
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils.config_utils import (
-    file_dir,
-    great_grandparent_dir,
-    data_dir,
-)
-
+from utils.config_utils import data_dir, file_dir, great_grandparent_dir
 
 # %%
 # Authentication #
@@ -146,7 +142,7 @@ def send_email(
 # Funtions #
 
 
-def get_attachment_from_search_string(
+def get_attachment_from_search_string(  # noqa: C901
     search_string,
     output_path,
     output_file_name=None,
