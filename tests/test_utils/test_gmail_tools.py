@@ -3,16 +3,10 @@
 
 import os
 from os.path import expanduser
-import sys
-import pytest
-import pandas as pd
-import numpy as np
 
-import config_test_utils
-
+import config_test_utils  # noqa F401
+from src.utils.display_tools import print_logger
 from src.utils.gmail_tools import get_gmail_service
-
-from src.utils.display_tools import pprint_ls, pprint_df, print_logger
 
 # %%
 # Tests #
