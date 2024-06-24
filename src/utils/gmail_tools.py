@@ -33,15 +33,16 @@ from utils.config_utils import file_dir, grandparent_dir
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
+DEFAULT_AUTH_DIR = grandparent_dir
 
 
 # %%
 # Authentication #
 
 
-def get_gmail_service():
-    token_path = os.path.join(grandparent_dir, "gmail_token.json")
-    oauth_path = os.path.join(grandparent_dir, "gmail_oauth.json")
+def get_gmail_service(auth_dir=DEFAULT_AUTH_DIR):
+    token_path = os.path.join(auth_dir, "gmail_token.json")
+    oauth_path = os.path.join(auth_dir, "gmail_oauth.json")
 
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is created
@@ -129,9 +130,10 @@ def send_email(
     to,
     subject,
     message_text,
+    auth_dir=DEFAULT_AUTH_DIR,
     attachment_path=None,
 ):
-    service = get_gmail_service()
+    service = get_gmail_service(auth_dir=auth_dir)
     message = create_message(
         sender_name, sender_email, to, subject, message_text, attachment_path
     )
@@ -147,9 +149,10 @@ def get_attachment_from_search_string(  # noqa: C901
     output_path,
     output_file_name=None,
     force_download=False,
+    auth_dir=DEFAULT_AUTH_DIR,
 ):
     # search gmail for message
-    service = get_gmail_service()
+    service = get_gmail_service(auth_dir=auth_dir)
     results = service.users().messages().list(userId="me", q=search_string).execute()
     all_messages_from_search = results.get("messages", [])
     ls_paths_with_file_names = []
@@ -367,9 +370,10 @@ def get_attachment_from_search_string(  # noqa: C901
 
 def get_email_addresses_from_search_string(
     search_string,
+    auth_dir=DEFAULT_AUTH_DIR,
 ):
     # search gmail for message
-    service = get_gmail_service()
+    service = get_gmail_service(auth_dir=auth_dir)
     results = service.users().messages().list(userId="me", q=search_string).execute()
     all_messages_from_search = results.get("messages", [])
     print(f"found {len(all_messages_from_search)} messages")
@@ -416,9 +420,10 @@ def get_email_addresses_from_search_string(
 
 def get_body_dataframe_from_search_string(
     search_string,
+    auth_dir=DEFAULT_AUTH_DIR,
 ):
     # search gmail for message
-    service = get_gmail_service()
+    service = get_gmail_service(auth_dir=auth_dir)
     all_messages_from_search = []
     request = service.users().messages().list(userId="me", q=search_string)
 
