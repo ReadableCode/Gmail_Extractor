@@ -30,13 +30,24 @@ if __name__ == "__main__":
 from utils.config_utils import data_dir, file_dir, great_grandparent_dir
 
 # %%
-# Authentication #
+# Variables #
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
+AUTH_DIR = os.path.join(
+    great_grandparent_dir,
+    "hellofresh_credentials",
+    "hellofresh_personal_creds",
+    "gmail_auth",
+)
 
-def get_gmail_service(auth_dir):
+
+# %%
+# Authentication #
+
+
+def get_gmail_service(auth_dir=AUTH_DIR):
     token_path = os.path.join(auth_dir, "token.json")
     oauth_path = os.path.join(auth_dir, "oauth.json")
 
@@ -126,9 +137,7 @@ def send_email(
     to,
     subject,
     message_text,
-    auth_dir=os.path.join(
-        great_grandparent_dir, "credentials", "personal", "gmail_auth"
-    ),
+    auth_dir=AUTH_DIR,
     attachment_path=None,
 ):
     service = get_gmail_service(auth_dir)
@@ -147,9 +156,7 @@ def get_attachment_from_search_string(  # noqa: C901
     output_path,
     output_file_name=None,
     force_download=False,
-    auth_dir=os.path.join(
-        great_grandparent_dir, "credentials", "personal", "gmail_auth"
-    ),
+    auth_dir=AUTH_DIR,
 ):
     # search gmail for message
     service = get_gmail_service(auth_dir=auth_dir)
@@ -370,9 +377,7 @@ def get_attachment_from_search_string(  # noqa: C901
 
 def get_email_addresses_from_search_string(
     search_string,
-    auth_dir=os.path.join(
-        great_grandparent_dir, "credentials", "personal", "gmail_auth"
-    ),
+    auth_dir=AUTH_DIR,
 ):
     # search gmail for message
     service = get_gmail_service(auth_dir=auth_dir)
@@ -422,9 +427,7 @@ def get_email_addresses_from_search_string(
 
 def get_body_dataframe_from_search_string(
     search_string,
-    auth_dir=os.path.join(
-        great_grandparent_dir, "credentials", "personal", "gmail_auth"
-    ),
+    auth_dir=AUTH_DIR,
 ):
     # search gmail for message
     service = get_gmail_service(auth_dir=auth_dir)
@@ -508,39 +511,6 @@ def get_body_dataframe_from_search_string(
     df = df.sort_values(by=["date"], ascending=True)
 
     return df
-
-
-# %%
-# If Main Then Do Some Testing #
-
-
-auth_dir = os.path.join(great_grandparent_dir, "credentials", "personal", "gmail_auth")
-
-
-if __name__ == "__main__":
-    today_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    gmail_search_string = "Job change reversion for Lyons"
-    print(f" ########### Searching for: {gmail_search_string} ###########")
-
-    email_addresses = get_email_addresses_from_search_string(
-        gmail_search_string,
-    )
-    print(email_addresses)
-
-
-# %%
-# If Main Then Do Some Testing #
-
-if __name__ == "__main__":
-    today_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    gmail_search_string = f"Fwd: US PSP Fees March 2023 after:{today_date}"
-    print(f" ########### Searching for: {gmail_search_string} ###########")
-
-    get_attachment_from_search_string(
-        gmail_search_string,
-        data_dir,
-        force_download=True,
-    )
 
 
 # %%
