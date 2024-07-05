@@ -27,27 +27,56 @@ if __name__ == "__main__":
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils.config_utils import file_dir, grandparent_dir
+from utils.display_tools import print_logger
 
 # %%
 # Variables #
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
-DEFAULT_AUTH_DIR = grandparent_dir
 
 
 # %%
 # Authentication #
 
 
-def get_gmail_service(auth_dir=DEFAULT_AUTH_DIR):
-    token_path = os.path.join(auth_dir, "gmail_token.json")
-    oauth_path = os.path.join(auth_dir, "gmail_oauth.json")
+def deploy_auth_files_from_env(account_type):
+    # if gmail_token and gmail_oauth are in the environment, write them to the default auth dir
+    if not (
+        f"GMAIL_OAUTH_{account_type.upper()}" in os.environ
+        and f"GMAIL_TOKEN_{account_type.upper()}" in os.environ
+    ):
+        print_logger(
+            f"GMAIL_OAUTH_{account_type.upper()} or GMAIL_TOKEN_{account_type.upper()} not in environment"
+        )
+        raise ValueError(
+            f"GMAIL_OAUTH_{account_type.upper()} or GMAIL_TOKEN_{account_type.upper()} not in environment"
+        )
+    with open(
+        os.path.join(grandparent_dir, f"gmail_oauth_{account_type}.json"), "w"
+    ) as f:
+        f.write(os.environ[f"GMAIL_OAUTH_{account_type.upper()}"])
+    with open(
+        os.path.join(grandparent_dir, f"gmail_token_{account_type}.json"), "w"
+    ) as f:
+        f.write(os.environ[f"GMAIL_TOKEN_{account_type.upper()}"])
+
+
+def get_gmail_service(account_type="default"):
+    oauth_path = os.path.join(grandparent_dir, f"gmail_oauth_{account_type}.json")
+    token_path = os.path.join(grandparent_dir, f"gmail_token_{account_type}.json")
+
+    if not (os.path.exists(oauth_path) and os.path.exists(token_path)):
+        print_logger(
+            f"oauth_path: {oauth_path} or token_path: {token_path} does not exist"
+        )
+        deploy_auth_files_from_env(account_type)
 
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is created
     # automatically when the authorization flow completes for the first time.
     if os.path.exists(token_path):
+        print_logger(f"Using:\ntoken file: {token_path}\noauth file: {oauth_path}")
         creds = Credentials.from_authorized_user_file(
             token_path,
             SCOPES,
@@ -130,10 +159,10 @@ def send_email(
     to,
     subject,
     message_text,
-    auth_dir=DEFAULT_AUTH_DIR,
+    account_type="default",
     attachment_path=None,
 ):
-    service = get_gmail_service(auth_dir=auth_dir)
+    service = get_gmail_service(account_type=account_type)
     message = create_message(
         sender_name, sender_email, to, subject, message_text, attachment_path
     )
@@ -149,10 +178,10 @@ def get_attachment_from_search_string(  # noqa: C901
     output_path,
     output_file_name=None,
     force_download=False,
-    auth_dir=DEFAULT_AUTH_DIR,
+    account_type="default",
 ):
     # search gmail for message
-    service = get_gmail_service(auth_dir=auth_dir)
+    service = get_gmail_service(account_type=account_type)
     results = service.users().messages().list(userId="me", q=search_string).execute()
     all_messages_from_search = results.get("messages", [])
     ls_paths_with_file_names = []
@@ -370,10 +399,10 @@ def get_attachment_from_search_string(  # noqa: C901
 
 def get_email_addresses_from_search_string(
     search_string,
-    auth_dir=DEFAULT_AUTH_DIR,
+    account_type="default",
 ):
     # search gmail for message
-    service = get_gmail_service(auth_dir=auth_dir)
+    service = get_gmail_service(account_type=account_type)
     results = service.users().messages().list(userId="me", q=search_string).execute()
     all_messages_from_search = results.get("messages", [])
     print(f"found {len(all_messages_from_search)} messages")
@@ -420,10 +449,10 @@ def get_email_addresses_from_search_string(
 
 def get_body_dataframe_from_search_string(
     search_string,
-    auth_dir=DEFAULT_AUTH_DIR,
+    account_type="default",
 ):
     # search gmail for message
-    service = get_gmail_service(auth_dir=auth_dir)
+    service = get_gmail_service(account_type=account_type)
     all_messages_from_search = []
     request = service.users().messages().list(userId="me", q=search_string)
 
