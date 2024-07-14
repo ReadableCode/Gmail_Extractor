@@ -31,3 +31,4 @@ sheets.googleapis.com-python.json
 looker.ini
 gmail_oauth*.json
 gmail_token*.json
+done_message_ids.txt
