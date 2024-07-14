@@ -42,24 +42,19 @@ SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
 def deploy_auth_files_from_env(account_type):
     # if gmail_token and gmail_oauth are in the environment, write them to the default auth dir
-    if not (
-        f"GMAIL_OAUTH_{account_type.upper()}" in os.environ
-        and f"GMAIL_TOKEN_{account_type.upper()}" in os.environ
-    ):
-        print_logger(
-            f"GMAIL_OAUTH_{account_type.upper()} or GMAIL_TOKEN_{account_type.upper()} not in environment"
-        )
-        raise ValueError(
-            f"GMAIL_OAUTH_{account_type.upper()} or GMAIL_TOKEN_{account_type.upper()} not in environment"
-        )
-    with open(
-        os.path.join(grandparent_dir, f"gmail_oauth_{account_type}.json"), "w"
-    ) as f:
-        f.write(os.environ[f"GMAIL_OAUTH_{account_type.upper()}"])
-    with open(
-        os.path.join(grandparent_dir, f"gmail_token_{account_type}.json"), "w"
-    ) as f:
-        f.write(os.environ[f"GMAIL_TOKEN_{account_type.upper()}"])
+    if f"GMAIL_OAUTH_{account_type.upper()}" in os.environ:
+        print_logger(f"GMAIL_OAUTH_{account_type.upper()} in environment")
+        with open(
+            os.path.join(grandparent_dir, f"gmail_oauth_{account_type}.json"), "w"
+        ) as f:
+            f.write(os.environ[f"GMAIL_OAUTH_{account_type.upper()}"])
+
+    if f"GMAIL_TOKEN_{account_type.upper()}" in os.environ:
+        print_logger(f"GMAIL_TOKEN_{account_type.upper()} in environment")
+        with open(
+            os.path.join(grandparent_dir, f"gmail_token_{account_type}.json"), "w"
+        ) as f:
+            f.write(os.environ[f"GMAIL_TOKEN_{account_type.upper()}"])
 
 
 def get_gmail_service(account_type="default"):
