@@ -60,7 +60,7 @@ def test_send_email():
         "Gmail Test Python with a test email in the body.\n\nSent on: "
         + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         + "\n\ntestemail@testemail.com",
-        attachment_path=test_csv_path,
+        ls_attachment_path=[test_csv_path],
     )
 
 

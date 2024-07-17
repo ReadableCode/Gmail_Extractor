@@ -132,7 +132,7 @@ def create_attachment(attachment_path):
 
 
 def create_message(
-    sender_name, sender_email, to, subject, message_text, attachment_path=None
+    sender_name, sender_email, to, subject, message_text, ls_attachment_path=[]
 ):
     message = MIMEMultipart()
     message["to"] = to
@@ -141,9 +141,10 @@ def create_message(
 
     message.attach(MIMEText(message_text, "html"))  # Set the MIME type to HTML
 
-    if attachment_path:
-        attachment = create_attachment(attachment_path)
-        message.attach(attachment)
+    if len(ls_attachment_path) > 0:
+        for attachment_path in ls_attachment_path:
+            attachment = create_attachment(attachment_path)
+            message.attach(attachment)
 
     return {"raw": base64.urlsafe_b64encode(message.as_bytes()).decode()}
 
@@ -155,11 +156,11 @@ def send_email(
     subject,
     message_text,
     account_type="default",
-    attachment_path=None,
+    ls_attachment_path=[],
 ):
     service = get_gmail_service(account_type=account_type)
     message = create_message(
-        sender_name, sender_email, to, subject, message_text, attachment_path
+        sender_name, sender_email, to, subject, message_text, ls_attachment_path
     )
     send_message(service, "me", message)
 
