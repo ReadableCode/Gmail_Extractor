@@ -55,7 +55,7 @@ def test_send_email():
     send_email(
         email_address_for_testing.split(".")[0],
         email_address_for_testing,
-        email_address_for_testing,
+        [email_address_for_testing],
         "Gmail Test Python",
         "Gmail Test Python with a test email in the body.\n\nSent on: "
         + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
