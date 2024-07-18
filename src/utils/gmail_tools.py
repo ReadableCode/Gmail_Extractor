@@ -132,12 +132,25 @@ def create_attachment(attachment_path):
 
 
 def create_message(
-    sender_name, sender_email, to, subject, message_text, ls_attachment_path=[]
+    sender_name,
+    sender_email,
+    to,
+    subject,
+    message_text,
+    ls_attachment_path=[],
+    cc=[],
+    bcc=[],
 ):
     message = MIMEMultipart()
-    message["to"] = to
+    message["to"] = ", ".join(to)
     message["from"] = formataddr((sender_name, sender_email))
     message["subject"] = subject
+
+    # Add CC and BCC
+    if cc:
+        message["cc"] = ", ".join(cc)
+    if bcc:
+        message["bcc"] = ", ".join(bcc)
 
     message.attach(MIMEText(message_text, "html"))  # Set the MIME type to HTML
 
@@ -157,10 +170,19 @@ def send_email(
     message_text,
     account_type="default",
     ls_attachment_path=[],
+    cc=[],
+    bcc=[],
 ):
     service = get_gmail_service(account_type=account_type)
     message = create_message(
-        sender_name, sender_email, to, subject, message_text, ls_attachment_path
+        sender_name,
+        sender_email,
+        to,
+        subject,
+        message_text,
+        ls_attachment_path,
+        cc,
+        bcc,
     )
     send_message(service, "me", message)
 
